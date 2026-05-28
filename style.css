@@ -1815,6 +1815,11 @@ img {
     padding: 28px 20px;
   }
 
+  .developer-avatar-inner {
+    width: 140px;
+    height: 140px;
+  }
+
   .developer-avatar {
     width: 120px;
     height: 120px;
