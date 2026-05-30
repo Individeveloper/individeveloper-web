@@ -743,5 +743,21 @@
     </button>
 
     <script src="script.js"></script>
+    <script>
+      (function ensureLoadingScreenClears() {
+        const screen = document.getElementById('loadingScreen');
+        if (!screen) return;
+
+        const hide = () => {
+          screen.classList.add('hidden');
+          document.body.style.overflow = '';
+        };
+
+        window.addEventListener('load', hide, { once: true });
+        setTimeout(() => {
+          if (!screen.classList.contains('hidden')) hide();
+        }, 4000);
+      })();
+    </script>
   </body>
 </html>
