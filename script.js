@@ -1,62 +1,4 @@
-// ========================================
-// LOADING SCREEN
-// ========================================
-
 const GITHUB_USERNAME = 'Individeveloper';
-
-(function initLoadingScreen() {
-  const screen   = document.getElementById('loadingScreen');
-  const bar      = document.getElementById('loadingBar');
-  const status   = document.getElementById('loadingStatus');
-  const particles = document.getElementById('loadingParticles');
-
-  if (!screen || !bar || !status) return;
-
-  // Spawn floating particles inside loading screen
-  const colors = ['124, 92, 252', '94, 234, 212', '244, 114, 182']; // Original colors
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'loading-particle';
-    const size = Math.random() * 8 + 4; // bigger for cartoon
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    p.style.cssText = [
-      `width:${size}px`, `height:${size}px`,
-      `left:${Math.random() * 100}%`,
-      `background:rgba(${color}, 1)`, // Solid color
-      `border: 2px solid #0f172a`, // Add border
-      `animation-duration:${(Math.random() * 6 + 5).toFixed(1)}s`,
-      `animation-delay:${(Math.random() * 5).toFixed(1)}s`
-    ].join(';');
-    particles.appendChild(p);
-  }
-
-  const steps = [
-    { pct: 20, msg: 'Loading assets...' },
-    { pct: 60, msg: 'Fetching projects...' },
-    { pct: 90, msg: 'Almost ready...' },
-    { pct: 100, msg: 'Welcome!' },
-  ];
-
-  let stepIdx = 0;
-  const interval = setInterval(() => {
-    if (stepIdx >= steps.length) {
-      clearInterval(interval);
-      // Show 100% for a moment before hiding
-      setTimeout(() => {
-        screen.classList.add('hidden');
-        document.body.style.overflow = '';
-      }, 600);
-      return;
-    }
-    const { pct, msg } = steps[stepIdx];
-    bar.style.width = pct + '%';
-    status.textContent = msg;
-    stepIdx++;
-  }, 350); // Faster loading interval
-
-  // Prevent scroll during loading
-  document.body.style.overflow = 'hidden';
-})();
 
 // ========================================
 // NAVBAR SCROLL EFFECT
@@ -463,11 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
       el.classList.add('is-visible');
     }, 200 + i * 150);
   });
-
+  
   // Load portfolio projects from JSON
   loadProjects();
 });
-
 // ========================================
 // LOAD PROJECTS FROM JSON
 // ========================================
