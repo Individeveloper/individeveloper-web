@@ -465,8 +465,50 @@ function buildProjectCard(project, category) {
 
 async function loadProjects() {
   try {
-    const res  = await fetch('./projects.json');
-    const data = await res.json();
+    const data = {
+      "games": [
+        {
+          "id": "game-coming-soon",
+          "title": "Coming Soon",
+          "description": "My latest game project is currently in development. Stay tuned for updates!",
+          "tags": ["In Development"],
+          "status": "coming-soon",
+          "gradient": "linear-gradient(135deg, #00d26a 0%, #00e073 100%)",
+          "icon": "fa-clock",
+          "github": null,
+          "demo": null,
+          "featured": false
+        }
+      ],
+      "web": [
+        {
+          "id": "web-coming-soon",
+          "title": "Coming Soon",
+          "description": "My latest web project is currently in development. Stay tuned for updates!",
+          "tags": ["In Development"],
+          "status": "coming-soon",
+          "gradient": "linear-gradient(135deg, #7c5cfc 0%, #a855f7 100%)",
+          "icon": "fa-clock",
+          "github": null,
+          "demo": null,
+          "featured": false
+        }
+      ],
+      "mobile": [
+        {
+          "id": "mobile-coming-soon",
+          "title": "Coming Soon",
+          "description": "My latest mobile app project is currently in development. Stay tuned for updates!",
+          "tags": ["In Development"],
+          "status": "coming-soon",
+          "gradient": "linear-gradient(135deg, #00e073 0%, #5eead4 100%)",
+          "icon": "fa-clock",
+          "github": null,
+          "demo": null,
+          "featured": false
+        }
+      ]
+    };
 
     ['games', 'web', 'mobile'].forEach(cat => {
       const grid = document.getElementById(`${cat}-grid`);
@@ -487,7 +529,7 @@ async function loadProjects() {
       }
     });
   } catch (err) {
-    console.warn('Could not load projects.json:', err);
+    console.warn('Could not load projects:', err);
   }
 }
 
