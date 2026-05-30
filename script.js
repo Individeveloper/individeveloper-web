@@ -436,7 +436,7 @@ function buildProjectCard(project, category) {
   const tagsHtml = project.tags.map(t => `<span class="rounded-full border border-white/20 px-2 py-1">${t}</span>`).join('');
 
   const item = document.createElement('div');
-  item.className = 'portfolio-item animate-on-scroll';
+  item.className = 'portfolio-item';
   item.innerHTML = `
     <div class="portfolio-card group relative overflow-hidden rounded-none border-4 border-white bg-[#2a2a35] shadow-[6px_6px_0_0_#ff5757]" data-tilt>
       <div class="portfolio-image relative flex h-40 items-center justify-center" style="background:${project.gradient};">
