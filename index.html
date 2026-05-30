@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>individev — Game & App Development Studio</title>
     <meta
       name="description"
-      content="individev adalah studio pengembangan game dan aplikasi berbasis website dan mobile oleh solo developer. Menghadirkan solusi digital inovatif dan berkualitas tinggi."
+      content="individev is a game and app development studio by a solo developer. Delivering innovative and high-quality digital solutions."
     />
     <meta
       name="keywords"
@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
 
@@ -29,9 +29,256 @@
     />
     <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        font-family: "Pixelify Sans", sans-serif;
+        background: #121218;
+        color: #f8f8f2;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="%23ffcf33" stroke="%23ffffff" stroke-width="2.5" stroke-linejoin="miter" stroke-linecap="square"><polygon points="3,3 3,19 8,14 11,20 14,18 11,13 18,13"/></svg>'), auto;
+      }
+
+      .font-display {
+        font-family: "Press Start 2P", cursive;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #ff5757 0%, #ffcf33 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      #particleCanvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .cursor-glow {
+        display: none;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .loading-particle {
+        position: absolute;
+        border-radius: 999px;
+        animation: loadingParticleFloat linear infinite;
+      }
+
+      .loading-orb {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(40px);
+        pointer-events: none;
+        animation: loadingOrbPulse 4s ease-in-out infinite alternate;
+      }
+
+      .loading-orb--1 {
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 87, 87, 0.15);
+        top: -100px;
+        left: -100px;
+      }
+
+      .loading-orb--2 {
+        width: 250px;
+        height: 250px;
+        background: rgba(56, 182, 255, 0.15);
+        bottom: -80px;
+        right: -80px;
+        animation-delay: -2s;
+      }
+
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .animate-on-scroll.slide-left {
+        transform: translateX(-60px);
+      }
+
+      .animate-on-scroll.slide-right {
+        transform: translateX(60px);
+      }
+
+      .animate-on-scroll.scale-up {
+        transform: scale(0.9);
+      }
+
+      .animate-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0) translateX(0) scale(1);
+      }
+
+      .nav-links.open {
+        display: flex !important;
+      }
+
+      .navbar.scrolled {
+        background: #121218;
+        border-bottom: 4px solid #ffffff;
+      }
+
+      .back-to-top.visible {
+        display: flex;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: #121218;
+        background: #ffcf33;
+        box-shadow: 4px 4px 0px 0px #f8f8f2;
+        transform: translateY(-2px);
+      }
+
+      .status--done {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+      }
+
+      .status--wip {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+      }
+
+      .status--coming {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+      }
+
+      .typing-cursor {
+        animation: cursorBlink 0.8s step-end infinite;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px 0px #0f172a;
+      }
+
+      .btn:active {
+        transform: translate(4px, 4px) !important;
+        box-shadow: 0px 0px 0px 0px #0f172a !important;
+      }
+
+      .hero-overlay {
+        background: rgba(18, 18, 24, 0.75);
+        background-image: linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.03) 75%, rgba(255,255,255,0.03)),
+          linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.03) 75%, rgba(255,255,255,0.03));
+        background-size: 8px 8px;
+        background-position: 0 0, 4px 4px;
+      }
+
+      .section {
+        padding: 120px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 64px;
+      }
+
+      .section-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #ff5757;
+        padding: 8px 20px;
+        background: rgba(255, 87, 87, 0.08);
+        border: 1px solid rgba(255, 87, 87, 0.2);
+        border-radius: 999px;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-family: "Press Start 2P", cursive;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+
+      .section-desc {
+        max-width: 640px;
+        margin: 0 auto;
+        color: #d1d1e0;
+      }
+
+      @keyframes logoReveal {
+        0% { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(10px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+      }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes cursorBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+
+      @keyframes loadingParticleFloat {
+        0% { transform: translateY(100vh) scale(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-100px) scale(1); opacity: 0; }
+      }
+
+      @keyframes loadingOrbPulse {
+        from { transform: scale(1); opacity: 0.6; }
+        to { transform: scale(1.3); opacity: 1; }
+      }
+
+      @keyframes scrollWheel {
+        0%, 100% { opacity: 1; transform: translateY(0); }
+        50% { opacity: 0.3; transform: translateY(8px); }
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-[#121218] text-[#f8f8f2] antialiased">
+    <!-- ============ LOADING SCREEN ============ -->
+    <div class="loading-screen fixed inset-0 z-[9999] flex items-center justify-center bg-[#121218] transition-opacity duration-700" id="loadingScreen">
+      <div class="loading-orb loading-orb--1"></div>
+      <div class="loading-orb loading-orb--2"></div>
+      <div class="loading-particles absolute inset-0 overflow-hidden pointer-events-none" id="loadingParticles"></div>
+      <div class="loading-content relative z-[2] flex max-w-[520px] flex-col items-center gap-8 px-6 text-center">
+        <div class="loading-logo font-display text-[clamp(2rem,6vw,3.5rem)] font-bold text-[#f8f8f2] leading-tight" style="animation: logoReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0;">
+          <span class="text-[#8b8b9e]">&lt;</span>indiv<span class="text-[#ff5757]">dev</span><span class="text-[#8b8b9e]">/&gt;</span>
+        </div>
+        <p class="loading-tagline text-[0.95rem] md:text-[1.1rem] uppercase tracking-[0.2em] text-[#d1d1e0] font-semibold" style="animation: fadeInUp 0.6s 0.4s ease forwards; opacity: 0;">
+          Solo Developer Studio
+        </p>
+        <div class="loading-bar-wrapper mx-auto h-6 w-[min(70vw,340px)] min-w-[220px] overflow-hidden rounded-full border-[4px] border-white bg-[#2a2a35]" style="animation: fadeInUp 0.6s 0.5s ease forwards; opacity: 0;">
+          <div class="loading-bar h-full w-0 bg-gradient-to-r from-[#ff5757] to-[#ffcf33] transition-[width] duration-300" id="loadingBar"></div>
+        </div>
+        <div class="loading-status min-h-[18px] text-[0.85rem] md:text-[0.9rem] font-semibold tracking-[0.08em] text-[#d1d1e0]" id="loadingStatus" style="animation: fadeInUp 0.6s 0.6s ease forwards; opacity: 0;">
+          Initializing...
+        </div>
+      </div>
+    </div>
+
     <!-- Cursor glow -->
     <div class="cursor-glow" id="cursorGlow"></div>
 
@@ -39,28 +286,21 @@
     <canvas id="particleCanvas"></canvas>
 
     <!-- ============ NAVBAR ============ -->
-    <nav class="navbar" id="navbar">
-      <div class="container nav-container">
-        <a href="#" class="nav-logo">
-          <span class="logo-bracket">&lt;</span>indiv<span
-            class="logo-highlight"
-            >dev</span
-          ><span class="logo-bracket">/&gt;</span>
+    <nav class="navbar fixed left-0 top-0 z-[1000] w-full transition-all duration-300" id="navbar">
+      <div class="nav-container relative mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <a href="#" class="nav-logo font-display text-lg md:text-xl text-white">
+          <span class="text-[#8b8b9e]">&lt;</span>indiv<span class="text-[#ff5757]">dev</span><span class="text-[#8b8b9e]">/&gt;</span>
         </a>
-        <ul class="nav-links" id="navLinks">
-          <li><a href="#hero" class="nav-link active">Home</a></li>
-          <li><a href="#about" class="nav-link">About</a></li>
-          <li><a href="#services" class="nav-link">Services</a></li>
-          <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
-          <li><a href="#developer" class="nav-link">Developer</a></li>
-          <li><a href="#contact" class="nav-link">Contact</a></li>
+        <ul class="nav-links absolute left-6 right-6 top-[72px] hidden flex-col items-center gap-2 rounded-xl border border-white/10 bg-[#121218] px-6 py-6 shadow-lg md:static md:flex md:flex-row md:border-none md:bg-transparent md:p-0 md:shadow-none" id="navLinks">
+          <li><a href="#hero" class="nav-link active rounded-full px-4 py-2 text-sm font-semibold text-[#f8f8f2]">Home</a></li>
+          <li><a href="#about" class="nav-link rounded-full px-4 py-2 text-sm font-semibold text-[#d1d1e0]">About</a></li>
+          <li><a href="#services" class="nav-link rounded-full px-4 py-2 text-sm font-semibold text-[#d1d1e0]">Services</a></li>
+          <li><a href="#portfolio" class="nav-link rounded-full px-4 py-2 text-sm font-semibold text-[#d1d1e0]">Portfolio</a></li>
+          <li><a href="#developer" class="nav-link rounded-full px-4 py-2 text-sm font-semibold text-[#d1d1e0]">Developer</a></li>
+          <li><a href="#contact" class="nav-link rounded-full px-4 py-2 text-sm font-semibold text-[#d1d1e0]">Contact</a></li>
         </ul>
-        <div class="nav-actions">
-          <button
-            class="nav-toggle"
-            id="navToggle"
-            aria-label="Toggle navigation"
-          >
+        <div class="nav-actions md:hidden">
+          <button class="nav-toggle inline-flex items-center justify-center rounded-md border border-white/20 px-3 py-2 text-white" id="navToggle" aria-label="Toggle navigation">
             <i class="fas fa-bars"></i>
           </button>
         </div>
@@ -68,105 +308,94 @@
     </nav>
 
     <!-- ============ HERO ============ -->
-    <section class="hero" id="hero">
-      <div class="hero-bg-effects">
-        <div class="hero-orb hero-orb--1"></div>
-        <div class="hero-orb hero-orb--2"></div>
-        <div class="hero-orb hero-orb--3"></div>
-        <div class="hero-grid"></div>
+    <section class="hero relative flex min-h-screen items-center justify-center overflow-hidden pt-28 pb-20" id="hero">
+      <div class="hero-bg-effects absolute inset-0 pointer-events-none overflow-hidden">
+        <video autoplay loop muted playsinline class="hero-video-bg absolute inset-0 h-full w-full object-cover -z-10">
+          <source src="assets/video-header.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-overlay absolute inset-0 -z-0"></div>
       </div>
-      <div class="container hero-content">
-        <div class="hero-badge animate-on-scroll">
-          <i class="fas fa-rocket"></i>
+      <div class="hero-content relative z-10 mx-auto max-w-5xl px-6 text-center">
+        <div class="hero-badge animate-on-scroll inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#121218]/80 px-6 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#d1d1e0]">
+          <i class="fas fa-rocket text-[#ffcf33]"></i>
           <span>Solo Developer Studio</span>
         </div>
-        <h1 class="hero-title animate-on-scroll">
+        <h1 class="hero-title animate-on-scroll font-display mt-6 text-[clamp(2.2rem,6vw,4.5rem)] leading-tight text-white">
           Crafting <span class="gradient-text">Digital Experiences</span><br />
           That
-          <span class="typing-wrapper"
-            ><span class="typing-text" id="typingText"></span
-            ><span class="typing-cursor">|</span></span
-          >
+          <span class="typing-wrapper"><span class="typing-text text-[#ffcf33]" id="typingText"></span><span class="typing-cursor text-[#ff5757]">|</span></span>
         </h1>
-        <p class="hero-subtitle animate-on-scroll">
-          Satu developer, banyak kemungkinan. Saya menghadirkan solusi digital
-          inovatif melalui pengembangan game dan aplikasi berbasis web & mobile
-          yang berkualitas tinggi.
+        <p class="hero-subtitle animate-on-scroll mx-auto mt-6 max-w-2xl text-sm md:text-base leading-relaxed text-[#d1d1e0]">
+          One developer, infinite possibilities. I deliver innovative digital solutions through high-quality web and mobile app development.
         </p>
-        <div class="hero-actions animate-on-scroll">
-          <a href="#portfolio" class="btn btn-primary magnetic-btn">
+        <div class="hero-actions animate-on-scroll mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a href="#portfolio" class="btn btn-primary magnetic-btn inline-flex items-center gap-2 border-4 border-white bg-gradient-to-r from-[#ff5757] to-[#ffcf33] px-8 py-3 text-sm font-semibold text-white shadow-[4px_4px_0_0_#0f172a] transition">
             <i class="fas fa-eye"></i>
-            <span>Lihat Portfolio</span>
+            <span>View Portfolio</span>
           </a>
-          <a href="#contact" class="btn btn-outline magnetic-btn">
+          <a href="#contact" class="btn btn-outline magnetic-btn inline-flex items-center gap-2 border-4 border-white bg-[#2a2a35] px-8 py-3 text-sm font-semibold text-white shadow-[4px_4px_0_0_#0f172a] transition">
             <i class="fas fa-paper-plane"></i>
-            <span>Hubungi Saya</span>
+            <span>Contact Me</span>
           </a>
         </div>
       </div>
-      <div class="hero-scroll-indicator">
-        <div class="scroll-mouse">
-          <div class="scroll-wheel"></div>
+      <div class="hero-scroll-indicator absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#8b8b9e]">
+        <div class="scroll-mouse flex h-10 w-6 items-start justify-center rounded-full border-2 border-white/20 pt-2">
+          <div class="scroll-wheel h-2 w-[3px] rounded-full bg-[#ff5757]" style="animation: scrollWheel 2s ease-in-out infinite;"></div>
         </div>
         <span>Scroll Down</span>
       </div>
     </section>
 
     <!-- ============ ABOUT ============ -->
-    <section class="section about" id="about">
-      <div class="container">
+    <section class="section about bg-[#1a1a24]" id="about">
+      <div class="mx-auto max-w-6xl px-6">
         <div class="section-header animate-on-scroll">
           <span class="section-tag"
-            ><i class="fas fa-info-circle"></i> Tentang</span
+            ><i class="fas fa-info-circle"></i> About</span
           >
           <h2 class="section-title">
-            Mengapa Memilih <span class="gradient-text">individev</span>?
+            Why Choose <span class="gradient-text">individev</span>?
           </h2>
           <p class="section-desc">
-            Dibangun oleh satu developer yang berdedikasi penuh dalam
-            menciptakan produk digital yang fungsional dan memukau secara
-            visual.
+            Built by a solo developer fully dedicated to creating functional and visually stunning digital products.
           </p>
         </div>
-        <div class="about-grid">
-          <div class="about-card animate-on-scroll" data-tilt>
-            <div class="about-card-icon">
+        <div class="about-grid grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div class="about-card animate-on-scroll rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="about-card-icon mb-5 flex h-12 w-12 items-center justify-center rounded-none bg-white/5 text-xl text-[#ff5757]">
               <i class="fas fa-lightbulb"></i>
             </div>
-            <h3>Inovasi Tanpa Batas</h3>
-            <p>
-              Terus mengeksplorasi teknologi terbaru untuk menghadirkan solusi
-              yang segar dan relevan di era digital.
+            <h3 class="font-display text-base">Limitless Innovation</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#d1d1e0]">
+              Continuously exploring the latest technologies to deliver fresh and relevant solutions in the digital era.
             </p>
           </div>
-          <div class="about-card animate-on-scroll" data-tilt>
-            <div class="about-card-icon">
+          <div class="about-card animate-on-scroll rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="about-card-icon mb-5 flex h-12 w-12 items-center justify-center rounded-none bg-white/5 text-xl text-[#ff5757]">
               <i class="fas fa-code"></i>
             </div>
-            <h3>Kualitas Kode</h3>
-            <p>
-              Setiap baris kode ditulis dengan standar tinggi, memastikan
-              performa optimal dan kemudahan perawatan.
+            <h3 class="font-display text-base">Code Quality</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#d1d1e0]">
+              Every line of code is written to high standards, ensuring optimal performance and ease of maintenance.
             </p>
           </div>
-          <div class="about-card animate-on-scroll" data-tilt>
-            <div class="about-card-icon">
+          <div class="about-card animate-on-scroll rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="about-card-icon mb-5 flex h-12 w-12 items-center justify-center rounded-none bg-white/5 text-xl text-[#ff5757]">
               <i class="fas fa-handshake"></i>
             </div>
-            <h3>Komunikasi Langsung</h3>
-            <p>
-              Tanpa perantara — Anda berkomunikasi langsung dengan developer,
-              memastikan visi Anda terwujud sempurna.
+            <h3 class="font-display text-base">Direct Communication</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#d1d1e0]">
+              No middlemen — you communicate directly with the developer, ensuring your vision is realized perfectly.
             </p>
           </div>
-          <div class="about-card animate-on-scroll" data-tilt>
-            <div class="about-card-icon">
+          <div class="about-card animate-on-scroll rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="about-card-icon mb-5 flex h-12 w-12 items-center justify-center rounded-none bg-white/5 text-xl text-[#ff5757]">
               <i class="fas fa-shield-halved"></i>
             </div>
-            <h3>Keamanan Terjamin</h3>
-            <p>
-              Keamanan data dan aplikasi adalah prioritas utama dalam setiap
-              tahap pengembangan.
+            <h3 class="font-display text-base">Guaranteed Security</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#d1d1e0]">
+              Data and application security is a top priority in every stage of development.
             </p>
           </div>
         </div>
@@ -175,92 +404,83 @@
 
     <!-- ============ SERVICES ============ -->
     <section class="section services" id="services">
-      <div class="container">
+      <div class="mx-auto max-w-6xl px-6">
         <div class="section-header animate-on-scroll">
-          <span class="section-tag"><i class="fas fa-cogs"></i> Layanan</span>
+          <span class="section-tag"><i class="fas fa-cogs"></i> Services</span>
           <h2 class="section-title">
-            Apa yang Saya <span class="gradient-text">Tawarkan</span>
+            What I <span class="gradient-text">Offer</span>
           </h2>
           <p class="section-desc">
-            Dari konsep hingga peluncuran, saya menawarkan rangkaian layanan
-            lengkap untuk kebutuhan digital Anda.
+            From concept to launch, I offer a complete suite of services for your digital needs.
           </p>
         </div>
-        <div class="services-grid">
-          <div class="service-card animate-on-scroll" data-tilt>
-            <div class="service-icon-wrapper">
-              <div class="service-icon">
+        <div class="services-grid grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div class="service-card animate-on-scroll relative rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="service-icon-wrapper mb-6">
+              <div class="service-icon flex h-14 w-14 items-center justify-center rounded-none bg-white/5 text-2xl text-[#ff5757]">
                 <i class="fas fa-gamepad"></i>
               </div>
-              <div class="service-icon-bg"></div>
             </div>
-            <h3>Game Development</h3>
-            <p>
-              Pengembangan game 2D & 3D yang engaging dan imersif untuk berbagai
-              platform mulai dari mobile hingga PC.
+            <h3 class="font-display text-base">Game Development</h3>
+            <p class="mt-3 text-sm leading-relaxed text-[#d1d1e0]">
+              Engaging and immersive 2D & 3D game development for various platforms from mobile to PC.
             </p>
-            <ul class="service-features">
-              <li><i class="fas fa-check"></i> Unity & Unreal Engine</li>
-              <li><i class="fas fa-check"></i> Multiplayer Systems</li>
-              <li><i class="fas fa-check"></i> Game Design & Balancing</li>
+            <ul class="service-features mt-5 space-y-2 text-xs text-[#d1d1e0]">
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Unity & Unreal Engine</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Multiplayer Systems</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Game Design & Balancing</li>
             </ul>
           </div>
           <div
-            class="service-card service-card--featured animate-on-scroll"
+            class="service-card service-card--featured animate-on-scroll relative rounded-none border-4 border-white/80 bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#38b6ff] transition"
             data-tilt
           >
-            <div class="service-badge">Popular</div>
-            <div class="service-icon-wrapper">
-              <div class="service-icon">
+            <div class="service-badge absolute right-5 top-5 rounded-full bg-gradient-to-r from-[#ff5757] to-[#ffcf33] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[#0a0a0f]">Popular</div>
+            <div class="service-icon-wrapper mb-6">
+              <div class="service-icon flex h-14 w-14 items-center justify-center rounded-none bg-white/5 text-2xl text-[#ff5757]">
                 <i class="fas fa-globe"></i>
               </div>
-              <div class="service-icon-bg"></div>
             </div>
-            <h3>Web Development</h3>
-            <p>
-              Website modern dan responsif dengan performa tinggi, mulai dari
-              landing page hingga web application kompleks.
+            <h3 class="font-display text-base">Web Development</h3>
+            <p class="mt-3 text-sm leading-relaxed text-[#d1d1e0]">
+              Modern and responsive high-performance websites, ranging from landing pages to complex web applications.
             </p>
-            <ul class="service-features">
-              <li><i class="fas fa-check"></i> React, Vue, Next.js</li>
-              <li><i class="fas fa-check"></i> Progressive Web Apps</li>
-              <li><i class="fas fa-check"></i> E-Commerce Solutions</li>
+            <ul class="service-features mt-5 space-y-2 text-xs text-[#d1d1e0]">
+              <li><i class="fas fa-check text-[#ffcf33]"></i> React, Vue, Next.js</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Progressive Web Apps</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> E-Commerce Solutions</li>
             </ul>
           </div>
-          <div class="service-card animate-on-scroll" data-tilt>
-            <div class="service-icon-wrapper">
-              <div class="service-icon">
+          <div class="service-card animate-on-scroll relative rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="service-icon-wrapper mb-6">
+              <div class="service-icon flex h-14 w-14 items-center justify-center rounded-none bg-white/5 text-2xl text-[#ff5757]">
                 <i class="fas fa-mobile-screen-button"></i>
               </div>
-              <div class="service-icon-bg"></div>
             </div>
-            <h3>Mobile Development</h3>
-            <p>
-              Aplikasi mobile native dan cross-platform yang intuitif, cepat,
-              dan memberikan pengalaman pengguna terbaik.
+            <h3 class="font-display text-base">Mobile Development</h3>
+            <p class="mt-3 text-sm leading-relaxed text-[#d1d1e0]">
+              Intuitive and fast native and cross-platform mobile apps that provide the best user experience.
             </p>
-            <ul class="service-features">
-              <li><i class="fas fa-check"></i> Flutter & React Native</li>
-              <li><i class="fas fa-check"></i> iOS & Android</li>
-              <li><i class="fas fa-check"></i> App Store Optimization</li>
+            <ul class="service-features mt-5 space-y-2 text-xs text-[#d1d1e0]">
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Flutter & React Native</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> iOS & Android</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> App Store Optimization</li>
             </ul>
           </div>
-          <div class="service-card animate-on-scroll" data-tilt>
-            <div class="service-icon-wrapper">
-              <div class="service-icon">
+          <div class="service-card animate-on-scroll relative rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#ff5757] transition" data-tilt>
+            <div class="service-icon-wrapper mb-6">
+              <div class="service-icon flex h-14 w-14 items-center justify-center rounded-none bg-white/5 text-2xl text-[#ff5757]">
                 <i class="fas fa-palette"></i>
               </div>
-              <div class="service-icon-bg"></div>
             </div>
-            <h3>UI/UX Design</h3>
-            <p>
-              Desain antarmuka yang indah dan intuitif, berdasarkan riset
-              pengguna yang mendalam untuk pengalaman optimal.
+            <h3 class="font-display text-base">UI/UX Design</h3>
+            <p class="mt-3 text-sm leading-relaxed text-[#d1d1e0]">
+              Beautiful and intuitive interface designs based on in-depth user research for an optimal experience.
             </p>
-            <ul class="service-features">
-              <li><i class="fas fa-check"></i> User Research</li>
-              <li><i class="fas fa-check"></i> Wireframing & Prototyping</li>
-              <li><i class="fas fa-check"></i> Design Systems</li>
+            <ul class="service-features mt-5 space-y-2 text-xs text-[#d1d1e0]">
+              <li><i class="fas fa-check text-[#ffcf33]"></i> User Research</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Wireframing & Prototyping</li>
+              <li><i class="fas fa-check text-[#ffcf33]"></i> Design Systems</li>
             </ul>
           </div>
         </div>
@@ -269,261 +489,121 @@
 
     <!-- ============ PORTFOLIO ============ -->
     <section class="section portfolio" id="portfolio">
-      <div class="container">
+      <div class="mx-auto max-w-6xl px-6">
         <div class="section-header animate-on-scroll">
           <span class="section-tag"
             ><i class="fas fa-briefcase"></i> Portfolio</span
           >
           <h2 class="section-title">
-            Karya <span class="gradient-text">Terbaik</span> Saya
+            My Best <span class="gradient-text">Work</span>
           </h2>
           <p class="section-desc">
-            Proyek-proyek yang telah diselesaikan dengan penuh dedikasi dan
-            kreativitas, dikelompokkan berdasarkan kategori.
+            Projects completed with dedication and creativity, grouped by category.
           </p>
         </div>
 
         <!-- ===== GAME PROJECTS ===== -->
         <div class="portfolio-category-section animate-on-scroll">
-          <div class="category-header">
-            <div class="category-icon-wrapper category-icon--games">
+          <div class="category-header mb-6 flex flex-wrap items-center gap-4">
+            <div class="category-icon-wrapper flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-[#2a2a35] text-[#ff5757]">
               <i class="fas fa-gamepad"></i>
             </div>
             <div class="category-header-text">
-              <h3>Game Development</h3>
-              <p>Game 2D & 3D yang engaging dan imersif</p>
+              <h3 class="font-display text-base">Game Development</h3>
+              <p class="text-xs text-[#d1d1e0]">Engaging and immersive 2D & 3D games</p>
             </div>
-            <div class="category-line"></div>
+            <div class="category-line h-[3px] flex-1 bg-gradient-to-r from-[#ff5757] to-transparent"></div>
           </div>
-          <div class="portfolio-grid">
-            <div class="portfolio-item animate-on-scroll">
-              <div class="portfolio-card" data-tilt>
-                <div
-                  class="portfolio-image"
-                  style="
-                    background: linear-gradient(
-                      135deg,
-                      #00d26a 0%,
-                      #00e073 100%
-                    );
-                  "
-                >
-                  <div class="portfolio-image-content">
-                    <i class="fas fa-clock fa-3x"></i>
-                  </div>
-                  <div class="portfolio-image-particles"></div>
-                </div>
-                <div class="portfolio-overlay">
-                  <div class="portfolio-info">
-                    <span class="portfolio-category-tag"
-                      ><i class="fas fa-gamepad"></i> Game</span
-                    >
-                    <h4>Coming Soon</h4>
-                    <p>
-                      Projek game terbaru sedang dalam tahap pengembangan.
-                      Pantau terus updatenya!
-                    </p>
-                    <div class="portfolio-tech">
-                      <span>In Development</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="portfolio-grid grid grid-cols-1 gap-6 md:grid-cols-2" id="games-grid">
+            <!-- Loaded dynamically from projects.json -->
           </div>
         </div>
 
         <!-- ===== WEB PROJECTS ===== -->
-        <div class="portfolio-category-section animate-on-scroll">
-          <div class="category-header">
-            <div class="category-icon-wrapper category-icon--web">
+        <div class="portfolio-category-section animate-on-scroll mt-12">
+          <div class="category-header mb-6 flex flex-wrap items-center gap-4">
+            <div class="category-icon-wrapper flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-[#2a2a35] text-[#38b6ff]">
               <i class="fas fa-globe"></i>
             </div>
             <div class="category-header-text">
-              <h3>Web Development</h3>
-              <p>Website modern dan responsif</p>
+              <h3 class="font-display text-base">Web Development</h3>
+              <p class="text-xs text-[#d1d1e0]">Modern and responsive websites</p>
             </div>
-            <div class="category-line"></div>
+            <div class="category-line h-[3px] flex-1 bg-gradient-to-r from-[#38b6ff] to-transparent"></div>
           </div>
-          <div class="portfolio-grid">
-            <div class="portfolio-item animate-on-scroll">
-              <div class="portfolio-card" data-tilt>
-                <div
-                  class="portfolio-image"
-                  style="
-                    background: linear-gradient(
-                      135deg,
-                      #7c5cfc 0%,
-                      #a855f7 100%
-                    );
-                  "
-                >
-                  <div class="portfolio-image-content">
-                    <i class="fas fa-clock fa-3x"></i>
-                  </div>
-                  <div class="portfolio-image-particles"></div>
-                </div>
-                <div class="portfolio-overlay">
-                  <div class="portfolio-info">
-                    <span class="portfolio-category-tag"
-                      ><i class="fas fa-globe"></i> Web</span
-                    >
-                    <h4>Coming Soon</h4>
-                    <p>
-                      Projek web terbaru sedang dalam tahap pengembangan. Pantau
-                      terus updatenya!
-                    </p>
-                    <div class="portfolio-tech">
-                      <span>In Development</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="portfolio-grid grid grid-cols-1 gap-6 md:grid-cols-2" id="web-grid">
+            <!-- Loaded dynamically from projects.json -->
           </div>
         </div>
 
         <!-- ===== MOBILE PROJECTS ===== -->
-        <div class="portfolio-category-section animate-on-scroll">
-          <div class="category-header">
-            <div class="category-icon-wrapper category-icon--mobile">
+        <div class="portfolio-category-section animate-on-scroll mt-12">
+          <div class="category-header mb-6 flex flex-wrap items-center gap-4">
+            <div class="category-icon-wrapper flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-[#2a2a35] text-[#ffcf33]">
               <i class="fas fa-mobile-screen-button"></i>
             </div>
             <div class="category-header-text">
-              <h3>Mobile Development</h3>
-              <p>Aplikasi mobile yang intuitif dan cepat</p>
+              <h3 class="font-display text-base">Mobile Development</h3>
+              <p class="text-xs text-[#d1d1e0]">Intuitive and fast mobile apps</p>
             </div>
-            <div class="category-line"></div>
+            <div class="category-line h-[3px] flex-1 bg-gradient-to-r from-[#ffcf33] to-transparent"></div>
           </div>
-          <div class="portfolio-grid">
-            <div class="portfolio-item animate-on-scroll">
-              <div class="portfolio-card" data-tilt>
-                <div
-                  class="portfolio-image"
-                  style="
-                    background: linear-gradient(
-                      135deg,
-                      #00e073 0%,
-                      #5eead4 100%
-                    );
-                  "
-                >
-                  <div class="portfolio-image-content">
-                    <i class="fas fa-clock fa-3x"></i>
-                  </div>
-                  <div class="portfolio-image-particles"></div>
-                </div>
-                <div class="portfolio-overlay">
-                  <div class="portfolio-info">
-                    <span class="portfolio-category-tag"
-                      ><i class="fas fa-mobile-screen-button"></i> Mobile</span
-                    >
-                    <h4>Coming Soon</h4>
-                    <p>
-                      Projek aplikasi mobile terbaru sedang dalam tahap
-                      pengembangan. Pantau terus updatenya!
-                    </p>
-                    <div class="portfolio-tech">
-                      <span>In Development</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="portfolio-grid grid grid-cols-1 gap-6 md:grid-cols-2" id="mobile-grid">
+            <!-- Loaded dynamically from projects.json -->
           </div>
         </div>
       </div>
     </section>
 
+
+
     <!-- ============ DEVELOPER (Solo) ============ -->
     <section class="section developer" id="developer">
-      <div class="container">
+      <div class="mx-auto max-w-6xl px-6">
         <div class="section-header animate-on-scroll">
           <span class="section-tag"
             ><i class="fas fa-terminal"></i> Developer</span
           >
           <h2 class="section-title">
-            Di Balik <span class="gradient-text">individev</span>
+            Behind <span class="gradient-text">individev</span>
           </h2>
           <p class="section-desc">
-            Satu orang, satu visi — membangun produk digital yang bermakna dan
-            berdampak.
+            One person, one vision — building meaningful and impactful digital products.
           </p>
         </div>
-        <div class="developer-card animate-on-scroll">
-          <div class="developer-left">
-            <div class="developer-avatar-wrapper">
-              <div class="developer-avatar-inner">
-                <div
-                  class="developer-avatar"
-                  style="
-                    background: linear-gradient(
-                      135deg,
-                      #00d26a 0%,
-                      #7c5cfc 100%
-                    );
-                  "
-                >
+        <div class="developer-card animate-on-scroll grid gap-8 rounded-none border-4 border-white bg-[#2a2a35] p-8 shadow-[6px_6px_0_0_#38b6ff] md:grid-cols-[220px_1fr]">
+          <div class="developer-left flex items-center justify-center">
+            <div class="developer-avatar-wrapper text-center">
+              <div class="developer-avatar-inner relative inline-flex items-center justify-center">
+                <div class="developer-avatar flex h-28 w-28 items-center justify-center rounded-full text-4xl text-white" style="background: linear-gradient(135deg, #00d26a 0%, #7c5cfc 100%);">
                   <i class="fas fa-user-astronaut"></i>
                 </div>
-                <div class="developer-avatar-ring"></div>
               </div>
-              <div class="developer-status">
-                <span class="status-dot"></span>
+              <div class="developer-status mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-[#121218] px-4 py-2 text-xs text-[#d1d1e0]">
+                <span class="status-dot h-2 w-2 rounded-full bg-[#10b981]"></span>
                 Available for hire
               </div>
             </div>
           </div>
           <div class="developer-right">
-            <div class="developer-name-row">
-              <h3>Solo Developer</h3>
-              <div class="developer-socials">
-                <a href="" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="#" aria-label="LinkedIn"
-                  ><i class="fab fa-linkedin-in"></i
-                ></a>
-                <a href="#" aria-label="Twitter"
-                  ><i class="fab fa-x-twitter"></i
-                ></a>
-                <a href="#" aria-label="Instagram"
-                  ><i class="fab fa-instagram"></i
-                ></a>
-              </div>
+            <div class="developer-name-row flex flex-wrap items-center justify-between gap-4">
+              <h3 class="font-display text-base">Solo Developer</h3>
             </div>
-            <span class="developer-role">Founder & Full-Stack Developer</span>
-            <p class="developer-bio">
-              Passionate developer dengan pengalaman 5+ tahun di industri
-              teknologi. Membangun individev dari nol dengan misi menghadirkan
-              produk digital berkualitas tinggi — mulai dari game yang imersif,
-              website yang responsif, hingga aplikasi mobile yang intuitif.
-              Setiap proyek dikerjakan secara personal dengan perhatian penuh
-              pada detail dan kualitas.
+            <span class="developer-role mt-2 inline-block text-xs uppercase tracking-[0.2em] text-[#ffcf33]">Founder & Full-Stack Developer</span>
+            <p class="developer-bio mt-4 text-sm leading-relaxed text-[#d1d1e0]">
+              Passionate developer with 5+ years of experience in the tech industry. I built individev from the ground up with a mission to deliver high-quality digital products — from immersive games and responsive websites to intuitive mobile apps. Every project is handled personally with full attention to detail and quality.
             </p>
-            <div class="developer-tech-stack">
-              <h4><i class="fas fa-layer-group"></i> Tech Stack</h4>
-              <div class="tech-pills">
-                <span class="tech-pill"
-                  ><i class="fab fa-react"></i> React</span
-                >
-                <span class="tech-pill"><i class="fab fa-vuejs"></i> Vue</span>
-                <span class="tech-pill"
-                  ><i class="fab fa-node-js"></i> Node.js</span
-                >
-                <span class="tech-pill"
-                  ><i class="fab fa-flutter"></i> Flutter</span
-                >
-                <span class="tech-pill"
-                  ><i class="fab fa-unity"></i> Unity</span
-                >
-                <span class="tech-pill"
-                  ><i class="fab fa-python"></i> Python</span
-                >
-                <span class="tech-pill"
-                  ><i class="fas fa-database"></i> PostgreSQL</span
-                >
-                <span class="tech-pill"
-                  ><i class="fab fa-figma"></i> Figma</span
-                >
+            <div class="developer-tech-stack mt-6">
+              <h4 class="text-sm font-semibold text-white"><i class="fas fa-layer-group text-[#ff5757]"></i> Tech Stack</h4>
+              <div class="tech-pills mt-3 flex flex-wrap gap-2 text-xs text-[#d1d1e0]">
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-react"></i> React</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-vuejs"></i> Vue</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-node-js"></i> Node.js</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-flutter"></i> Flutter</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-unity"></i> Unity</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-python"></i> Python</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fas fa-database"></i> PostgreSQL</span>
+                <span class="tech-pill inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#121218] px-3 py-2"><i class="fab fa-figma"></i> Figma</span>
               </div>
             </div>
           </div>
@@ -533,113 +613,85 @@
 
     <!-- ============ CONTACT ============ -->
     <section class="section contact" id="contact">
-      <div class="container">
+      <div class="mx-auto max-w-6xl px-6">
         <div class="section-header animate-on-scroll">
           <span class="section-tag"
-            ><i class="fas fa-envelope"></i> Kontak</span
+            ><i class="fas fa-envelope"></i> Contact</span
           >
           <h2 class="section-title">
-            Mari <span class="gradient-text">Berkolaborasi</span>
+            Let's <span class="gradient-text">Collaborate</span>
           </h2>
           <p class="section-desc">
-            Punya ide proyek? Hubungi saya dan mari wujudkan visi digital Anda
-            bersama.
+            Have a project idea? Contact me and let's bring your digital vision to life together.
           </p>
         </div>
-        <div class="contact-wrapper">
+        <div class="contact-wrapper grid gap-8 md:grid-cols-[1fr_1.2fr]">
           <div class="contact-info animate-on-scroll">
-            <div class="contact-info-card">
-              <div class="contact-info-item">
-                <div class="contact-info-icon">
+            <div class="contact-info-card rounded-none border-4 border-white bg-[#2a2a35] p-6 shadow-[6px_6px_0_0_#ff5757]">
+              <div class="contact-info-item flex items-center gap-4">
+                <div class="contact-info-icon flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#121218] text-[#ff5757]">
                   <i class="fas fa-envelope"></i>
                 </div>
                 <div>
-                  <h4>Email</h4>
-                  <p>hello@individev.com</p>
+                  <h4 class="text-sm font-semibold">Email</h4>
+                  <p class="text-xs text-[#d1d1e0]">hello@individev.com</p>
                 </div>
               </div>
-              <div class="contact-info-item"></div>
-              <div class="contact-info-item">
-                <div class="contact-info-icon">
+              <div class="contact-info-item mt-6 flex items-center gap-4">
+                <div class="contact-info-icon flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#121218] text-[#ff5757]">
                   <i class="fas fa-location-dot"></i>
                 </div>
                 <div>
-                  <h4>Lokasi</h4>
-                  <p>West Kalimantan, Indonesia</p>
+                  <h4 class="text-sm font-semibold">Location</h4>
+                  <p class="text-xs text-[#d1d1e0]">West Kalimantan, Indonesia</p>
                 </div>
               </div>
             </div>
-            <div class="contact-socials">
+            <div class="contact-socials mt-6 flex items-center gap-3 text-[#d1d1e0]">
               <a
                 href="https://www.instagram.com/varusernull/"
                 target="_blank"
-                class="social-link"
+                class="social-link inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/20 bg-[#121218] hover:text-white"
                 aria-label="Instagram"
                 ><i class="fab fa-instagram"></i
               ></a>
               <a
                 href="https://www.linkedin.com/in/jayden-dwi-naufal-5a1b66294/"
                 target="_blank"
-                class="social-link"
+                class="social-link inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/20 bg-[#121218] hover:text-white"
                 aria-label="LinkedIn"
                 ><i class="fab fa-linkedin-in"></i
               ></a>
               <a
                 href="https://github.com/Individeveloper"
-                class="social-link"
+                class="social-link inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/20 bg-[#121218] hover:text-white"
                 aria-label="GitHub"
                 ><i class="fab fa-github"></i
               ></a>
             </div>
           </div>
-          <form class="contact-form animate-on-scroll" id="contactForm">
-            <div class="form-row">
+          <form class="contact-form animate-on-scroll rounded-none border-4 border-white bg-[#2a2a35] p-6 shadow-[6px_6px_0_0_#38b6ff]" id="contactForm">
+            <div class="form-row grid gap-4 md:grid-cols-2">
               <div class="form-group">
-                <label for="name"><i class="fas fa-user"></i> Nama</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Nama lengkap Anda"
-                  required
-                />
+                <label for="name" class="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]"><i class="fas fa-user text-[#ffcf33]"></i> Name</label>
+                <input type="text" id="name" name="name" placeholder="Your full name" required class="w-full rounded-none border-2 border-white/20 bg-[#121218] px-4 py-3 text-sm text-white placeholder:text-[#8b8b9e]" />
               </div>
               <div class="form-group">
-                <label for="email"><i class="fas fa-at"></i> Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="email@example.com"
-                  required
-                />
+                <label for="email" class="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]"><i class="fas fa-at text-[#ffcf33]"></i> Email</label>
+                <input type="email" id="email" name="email" placeholder="email@example.com" required class="w-full rounded-none border-2 border-white/20 bg-[#121218] px-4 py-3 text-sm text-white placeholder:text-[#8b8b9e]" />
               </div>
             </div>
-            <div class="form-group">
-              <label for="subject"><i class="fas fa-tag"></i> Subjek</label>
-              <input
-                type="text"
-                id="subject"
-                name="subject"
-                placeholder="Topik pesan Anda"
-                required
-              />
+            <div class="form-group mt-4">
+              <label for="subject" class="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]"><i class="fas fa-tag text-[#ffcf33]"></i> Subject</label>
+              <input type="text" id="subject" name="subject" placeholder="Message topic" required class="w-full rounded-none border-2 border-white/20 bg-[#121218] px-4 py-3 text-sm text-white placeholder:text-[#8b8b9e]" />
             </div>
-            <div class="form-group">
-              <label for="message"
-                ><i class="fas fa-comment-dots"></i> Pesan</label
-              >
-              <textarea
-                id="message"
-                name="message"
-                rows="5"
-                placeholder="Ceritakan tentang proyek Anda..."
-                required
-              ></textarea>
+            <div class="form-group mt-4">
+              <label for="message" class="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]"><i class="fas fa-comment-dots text-[#ffcf33]"></i> Message</label>
+              <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required class="w-full rounded-none border-2 border-white/20 bg-[#121218] px-4 py-3 text-sm text-white placeholder:text-[#8b8b9e]"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-full magnetic-btn">
+            <button type="submit" class="btn btn-primary btn-full magnetic-btn mt-5 inline-flex w-full items-center justify-center gap-2 border-4 border-white bg-gradient-to-r from-[#ff5757] to-[#ffcf33] px-6 py-3 text-sm font-semibold text-white shadow-[4px_4px_0_0_#0f172a]">
               <i class="fas fa-paper-plane"></i>
-              <span>Kirim Pesan</span>
+              <span>Send Message</span>
             </button>
           </form>
         </div>
@@ -647,50 +699,46 @@
     </section>
 
     <!-- ============ FOOTER ============ -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-top">
+    <footer class="footer border-t-4 border-white/10 bg-[#121218]">
+      <div class="mx-auto max-w-6xl px-6 py-10">
+        <div class="footer-top grid gap-8 md:grid-cols-[1.2fr_1fr]">
           <div class="footer-brand">
-            <a href="#" class="nav-logo">
-              <span class="logo-bracket">&lt;</span>indiv<span
-                class="logo-highlight"
-                >dev</span
-              ><span class="logo-bracket">/&gt;</span>
+            <a href="#" class="nav-logo font-display text-lg text-white">
+              <span class="text-[#8b8b9e]">&lt;</span>indiv<span class="text-[#ff5757]">dev</span><span class="text-[#8b8b9e]">/&gt;</span>
             </a>
-            <p>
-              Solo developer studio yang menghadirkan solusi digital inovatif
-              melalui game dan aplikasi berkualitas tinggi.
+            <p class="mt-3 text-sm text-[#d1d1e0]">
+              Solo developer studio delivering innovative digital solutions through high-quality games and applications.
             </p>
           </div>
-          <div class="footer-links-group">
+          <div class="footer-links-group grid gap-6 sm:grid-cols-2">
             <div class="footer-links">
-              <h4>Quick Links</h4>
-              <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
+              <h4 class="text-sm font-semibold text-white">Quick Links</h4>
+              <ul class="mt-3 space-y-2 text-xs text-[#d1d1e0]">
+                <li><a href="#about" class="hover:text-white">About</a></li>
+                <li><a href="#services" class="hover:text-white">Services</a></li>
+                <li><a href="#portfolio" class="hover:text-white">Portfolio</a></li>
+                <li><a href="#contact" class="hover:text-white">Contact</a></li>
               </ul>
             </div>
             <div class="footer-links">
-              <h4>Services</h4>
-              <ul>
-                <li><a href="#services">Game Development</a></li>
-                <li><a href="#services">Web Development</a></li>
-                <li><a href="#services">Mobile Development</a></li>
-                <li><a href="#services">UI/UX Design</a></li>
+              <h4 class="text-sm font-semibold text-white">Services</h4>
+              <ul class="mt-3 space-y-2 text-xs text-[#d1d1e0]">
+                <li><a href="#services" class="hover:text-white">Game Development</a></li>
+                <li><a href="#services" class="hover:text-white">Web Development</a></li>
+                <li><a href="#services" class="hover:text-white">Mobile Development</a></li>
+                <li><a href="#services" class="hover:text-white">UI/UX Design</a></li>
               </ul>
             </div>
           </div>
         </div>
-        <div class="footer-bottom">
+        <div class="footer-bottom mt-8 border-t border-white/10 pt-4 text-xs text-[#8b8b9e]">
           <p>&copy; 2026 individev. All rights reserved.</p>
         </div>
       </div>
     </footer>
 
     <!-- Back to Top -->
-    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <button class="back-to-top fixed bottom-6 right-6 hidden h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-[#ffcf33] text-[#121218] shadow-[4px_4px_0_0_#0f172a]" id="backToTop" aria-label="Back to top">
       <i class="fas fa-arrow-up"></i>
     </button>
 

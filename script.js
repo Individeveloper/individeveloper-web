@@ -1,8 +1,67 @@
 // ========================================
+// LOADING SCREEN
+// ========================================
+
+const GITHUB_USERNAME = 'Individeveloper';
+
+(function initLoadingScreen() {
+  const screen   = document.getElementById('loadingScreen');
+  const bar      = document.getElementById('loadingBar');
+  const status   = document.getElementById('loadingStatus');
+  const particles = document.getElementById('loadingParticles');
+
+  if (!screen) return;
+
+  // Spawn floating particles inside loading screen
+  const colors = ['124, 92, 252', '94, 234, 212', '244, 114, 182']; // Original colors
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'loading-particle';
+    const size = Math.random() * 8 + 4; // bigger for cartoon
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    p.style.cssText = [
+      `width:${size}px`, `height:${size}px`,
+      `left:${Math.random() * 100}%`,
+      `background:rgba(${color}, 1)`, // Solid color
+      `border: 2px solid #0f172a`, // Add border
+      `animation-duration:${(Math.random() * 6 + 5).toFixed(1)}s`,
+      `animation-delay:${(Math.random() * 5).toFixed(1)}s`
+    ].join(';');
+    particles.appendChild(p);
+  }
+
+  const steps = [
+    { pct: 20, msg: 'Loading assets...' },
+    { pct: 60, msg: 'Fetching projects...' },
+    { pct: 90, msg: 'Almost ready...' },
+    { pct: 100, msg: 'Welcome!' },
+  ];
+
+  let stepIdx = 0;
+  const interval = setInterval(() => {
+    if (stepIdx >= steps.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        screen.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+      return;
+    }
+    const { pct, msg } = steps[stepIdx];
+    bar.style.width = pct + '%';
+    status.textContent = msg;
+    stepIdx++;
+  }, 300); // Faster loading interval
+
+  // Prevent scroll during loading
+  document.body.style.overflow = 'hidden';
+})();
+
+// ========================================
 // NAVBAR SCROLL EFFECT
 // ========================================
 
-const navbar = document.getElementById('navbar');
+const navbar    = document.getElementById('navbar');
 const backToTop = document.getElementById('backToTop');
 
 function handleScroll() {
@@ -212,65 +271,22 @@ if (typingText) {
 }
 
 // ========================================
-// CURSOR GLOW EFFECT
+// CURSOR GLOW EFFECT (DISABLED FOR CARTOON STYLE)
 // ========================================
 
 const cursorGlow = document.getElementById('cursorGlow');
-if (cursorGlow && !window.matchMedia("(max-width: 768px)").matches) {
-  document.addEventListener('mousemove', (e) => {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-  });
-
-  // Highlight glow on interactive elements
-  const interactables = document.querySelectorAll('a, button, .portfolio-card, .service-card, .about-card');
-  interactables.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursorGlow.style.background = 'radial-gradient(circle, rgba(94, 234, 212, 0.08) 0%, transparent 70%)';
-      cursorGlow.style.width = '600px';
-      cursorGlow.style.height = '600px';
-    });
-    el.addEventListener('mouseleave', () => {
-      cursorGlow.style.background = 'radial-gradient(circle, rgba(124, 92, 252, 0.06) 0%, transparent 70%)';
-      cursorGlow.style.width = '500px';
-      cursorGlow.style.height = '500px';
-    });
-  });
+if (cursorGlow) {
+  cursorGlow.style.display = 'none';
 }
 
 // ========================================
-// 3D TILT EFFECT
+// 3D TILT EFFECT (DISABLED FOR CARTOON STYLE)
 // ========================================
 
-const tiltElements = document.querySelectorAll('[data-tilt]');
+// 3D tilt effect is removed because flat hard shadows don't look good with 3D rotation.
 
-if (!window.matchMedia("(max-width: 768px)").matches) {
-  tiltElements.forEach(el => {
-    el.addEventListener('mousemove', handleTilt);
-    el.addEventListener('mouseleave', resetTilt);
-  });
-}
-
-function handleTilt(e) {
-  const el = e.currentTarget;
-  const rect = el.getBoundingClientRect();
-  
-  const x = e.clientX - rect.left; // x position within the element
-  const y = e.clientY - rect.top;  // y position within the element
-  
-  const centerX = rect.width / 2;
-  const centerY = rect.height / 2;
-  
-  const rotateX = ((y - centerY) / centerY) * -10; // max 10 deg
-  const rotateY = ((x - centerX) / centerX) * 10;
-  
-  el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-}
-
-function resetTilt(e) {
-  const el = e.currentTarget;
-  el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-}
+function handleTilt(e) {}
+function resetTilt(e) {}
 
 // ========================================
 // MAGNETIC BUTTON EFFECT
@@ -332,11 +348,10 @@ if (canvas) {
     constructor() {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
-      this.size = Math.random() * 2;
+      this.size = Math.random() * 8 + 4; // Bigger sizes
       this.speedX = Math.random() * 0.5 - 0.25;
       this.speedY = Math.random() * 0.5 - 0.25;
-      this.opacity = Math.random() * 0.5;
-      // Use theme colors randomly
+      // Use solid theme colors (original)
       const colors = ['124, 92, 252', '94, 234, 212', '244, 114, 182'];
       this.color = colors[Math.floor(Math.random() * colors.length)];
     }
@@ -353,10 +368,14 @@ if (canvas) {
     }
 
     draw() {
-      ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+      ctx.fillStyle = `rgb(${this.color})`;
+      ctx.strokeStyle = `#0f172a`;
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      // Draw a square for variety
+      ctx.rect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
       ctx.fill();
+      ctx.stroke();
     }
   }
 
@@ -390,21 +409,41 @@ backToTop.addEventListener('click', () => {
 
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const btn = contactForm.querySelector('.btn-primary');
   const originalContent = btn.innerHTML;
 
-  btn.innerHTML = '<i class="fas fa-check"></i><span>Pesan Terkirim!</span>';
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>Sending...</span>';
   btn.style.pointerEvents = 'none';
-  btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+  try {
+    const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      method: 'POST',
+      body: new FormData(contactForm),
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      btn.innerHTML = '<i class="fas fa-check"></i><span>Message Sent!</span>';
+      btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      contactForm.reset();
+    } else {
+      btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Error</span>';
+      btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    }
+  } catch (error) {
+    btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Error</span>';
+    btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+  }
 
   setTimeout(() => {
     btn.innerHTML = originalContent;
     btn.style.pointerEvents = '';
     btn.style.background = '';
-    contactForm.reset();
   }, 3000);
 });
 
@@ -423,4 +462,90 @@ document.addEventListener('DOMContentLoaded', () => {
       el.classList.add('is-visible');
     }, 200 + i * 150);
   });
+
+  // Load portfolio projects from JSON
+  loadProjects();
 });
+
+// ========================================
+// LOAD PROJECTS FROM JSON
+// ========================================
+
+const CATEGORY_ICONS = { games: 'fa-gamepad', web: 'fa-globe', mobile: 'fa-mobile-screen-button' };
+const CATEGORY_LABELS = { games: 'Game', web: 'Web', mobile: 'Mobile' };
+
+const STATUS_CONFIG = {
+  'completed':   { label: 'Completed',    cls: 'status--done',    icon: 'fa-check' },
+  'in-progress': { label: 'In Progress',  cls: 'status--wip',     icon: 'fa-code' },
+  'coming-soon': { label: 'Coming Soon',  cls: 'status--coming',  icon: 'fa-clock' },
+};
+
+function buildProjectCard(project, category) {
+  const catIcon  = CATEGORY_ICONS[category] || 'fa-folder';
+  const catLabel = CATEGORY_LABELS[category] || category;
+  const iconCls  = project.icon || 'fa-code';
+  const statusCfg = STATUS_CONFIG[project.status] || STATUS_CONFIG['coming-soon'];
+
+  const linksHtml = [
+    project.github ? `<a href="${project.github}" target="_blank" class="portfolio-link inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-white/20 bg-[#121218] text-white" aria-label="GitHub"><i class="fab fa-github"></i></a>` : '',
+    project.demo   ? `<a href="${project.demo}"   target="_blank" class="portfolio-link inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-white/20 bg-[#121218] text-white" aria-label="Demo"><i class="fas fa-arrow-up-right-from-square"></i></a>` : '',
+  ].join('');
+
+  const tagsHtml = project.tags.map(t => `<span class="rounded-full border border-white/20 px-2 py-1">${t}</span>`).join('');
+
+  const item = document.createElement('div');
+  item.className = 'portfolio-item animate-on-scroll';
+  item.innerHTML = `
+    <div class="portfolio-card group relative overflow-hidden rounded-none border-4 border-white bg-[#2a2a35] shadow-[6px_6px_0_0_#ff5757]" data-tilt>
+      <div class="portfolio-image relative flex h-40 items-center justify-center" style="background:${project.gradient};">
+        <div class="portfolio-image-content text-white"><i class="fas ${iconCls} fa-3x"></i></div>
+        ${project.featured ? '<div class="portfolio-featured-badge absolute left-4 top-4 rounded-full bg-[#ffcf33] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[#121218]"><i class="fas fa-star"></i> Featured</div>' : ''}
+      </div>
+      <div class="portfolio-overlay absolute inset-0 bg-[#121218]/90 opacity-0 transition duration-300 group-hover:opacity-100">
+        <div class="portfolio-info flex h-full flex-col justify-between p-5">
+          <div class="portfolio-info-top flex items-center justify-between gap-2 text-[0.65rem] uppercase tracking-[0.2em] text-[#d1d1e0]">
+            <span class="portfolio-category-tag inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1"><i class="fas ${catIcon}"></i> ${catLabel}</span>
+            <span class="portfolio-status-badge ${statusCfg.cls} inline-flex items-center gap-2 rounded-full px-3 py-1"><i class="fas ${statusCfg.icon}"></i> ${statusCfg.label}</span>
+          </div>
+          <div>
+            <h4 class="mt-4 text-sm font-semibold text-white">${project.title}</h4>
+            <p class="mt-2 text-xs leading-relaxed text-[#d1d1e0]">${project.description}</p>
+          </div>
+          <div class="portfolio-footer mt-4 flex items-center justify-between gap-3">
+            <div class="portfolio-tech flex flex-wrap gap-2 text-[0.65rem] text-[#d1d1e0]">${tagsHtml}</div>
+            ${linksHtml ? `<div class="portfolio-links flex items-center gap-2 text-white">${linksHtml}</div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  return item;
+}
+
+async function loadProjects() {
+  try {
+    const res  = await fetch('./projects.json');
+    const data = await res.json();
+
+    ['games', 'web', 'mobile'].forEach(cat => {
+      const grid = document.getElementById(`${cat}-grid`);
+      if (!grid || !data[cat]) return;
+      grid.innerHTML = '';
+      data[cat].forEach(project => {
+        const card = buildProjectCard(project, cat);
+        grid.appendChild(card);
+      });
+      // Re-observe newly added animated elements
+      grid.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+      // Re-enable tilt on new cards (desktop only)
+      if (!window.matchMedia('(max-width: 768px)').matches) {
+        grid.querySelectorAll('[data-tilt]').forEach(el => {
+          el.addEventListener('mousemove', handleTilt);
+          el.addEventListener('mouseleave', resetTilt);
+        });
+      }
+    });
+  } catch (err) {
+    console.warn('Could not load projects.json:', err);
+  }
+}
+
