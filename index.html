@@ -748,15 +748,25 @@
         const screen = document.getElementById('loadingScreen');
         if (!screen) return;
 
+        const minDurationMs = 1200;
+        const maxDurationMs = 6000;
+        const start = Date.now();
+
         const hide = () => {
           screen.classList.add('hidden');
           document.body.style.overflow = '';
         };
 
-        window.addEventListener('load', hide, { once: true });
+        const hideAfterMin = () => {
+          const elapsed = Date.now() - start;
+          const remaining = Math.max(0, minDurationMs - elapsed);
+          setTimeout(hide, remaining);
+        };
+
+        window.addEventListener('load', hideAfterMin, { once: true });
         setTimeout(() => {
           if (!screen.classList.contains('hidden')) hide();
-        }, 4000);
+        }, maxDurationMs);
       })();
     </script>
   </body>
