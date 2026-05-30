@@ -41,18 +41,18 @@ const GITHUB_USERNAME = 'Individeveloper';
   const interval = setInterval(() => {
     if (stepIdx >= steps.length) {
       clearInterval(interval);
+      // Show 100% for a moment before hiding
       setTimeout(() => {
         screen.classList.add('hidden');
         document.body.style.overflow = '';
-      }, 300);
+      }, 600);
       return;
     }
     const { pct, msg } = steps[stepIdx];
-    bar.style.width = '100%';
-    bar.style.transform = `scaleX(${pct / 100})`;
+    bar.style.width = pct + '%';
     status.textContent = msg;
     stepIdx++;
-  }, 300); // Faster loading interval
+  }, 350); // Faster loading interval
 
   // Prevent scroll during loading
   document.body.style.overflow = 'hidden';

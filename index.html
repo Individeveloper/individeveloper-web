@@ -78,12 +78,7 @@
         animation: loadingParticleFloat linear infinite;
       }
 
-      .loading-bar {
-        transform-origin: left;
-        transform: scaleX(0);
-        transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        will-change: transform;
-      }
+
 
       .loading-orb {
         position: absolute;
@@ -278,7 +273,7 @@
           Solo Developer Studio
         </p>
         <div class="loading-bar-wrapper mx-auto h-6 w-[min(70vw,340px)] min-w-[220px] overflow-hidden rounded-full border-[4px] border-white bg-[#2a2a35]" style="animation: fadeInUp 0.6s 0.5s ease forwards; opacity: 0;">
-          <div class="loading-bar h-full w-full bg-gradient-to-r from-[#ff5757] to-[#ffcf33]" id="loadingBar"></div>
+          <div class="loading-bar h-full w-0 bg-gradient-to-r from-[#ff5757] to-[#ffcf33]" id="loadingBar" style="transition: width 0.4s ease;"></div>
         </div>
         <div class="loading-status min-h-[18px] text-[0.85rem] md:text-[0.9rem] font-semibold tracking-[0.08em] text-[#d1d1e0]" id="loadingStatus" style="animation: fadeInUp 0.6s 0.6s ease forwards; opacity: 0;">
           Initializing...
@@ -755,24 +750,19 @@
         const screen = document.getElementById('loadingScreen');
         if (!screen) return;
 
-        const minDurationMs = 1200;
-        const maxDurationMs = 6000;
+        const maxDurationMs = 7000;
         const start = Date.now();
 
         const hide = () => {
-          screen.classList.add('hidden');
-          document.body.style.overflow = '';
+          if (!screen.classList.contains('hidden')) {
+            screen.classList.add('hidden');
+            document.body.style.overflow = '';
+          }
         };
 
-        const hideAfterMin = () => {
-          const elapsed = Date.now() - start;
-          const remaining = Math.max(0, minDurationMs - elapsed);
-          setTimeout(hide, remaining);
-        };
-
-        window.addEventListener('load', hideAfterMin, { once: true });
+        // Fallback: force hide if stuck (after max duration)
         setTimeout(() => {
-          if (!screen.classList.contains('hidden')) hide();
+          hide();
         }, maxDurationMs);
       })();
     </script>
