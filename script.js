@@ -10,7 +10,7 @@ const GITHUB_USERNAME = 'Individeveloper';
   const status   = document.getElementById('loadingStatus');
   const particles = document.getElementById('loadingParticles');
 
-  if (!screen) return;
+  if (!screen || !bar || !status) return;
 
   // Spawn floating particles inside loading screen
   const colors = ['124, 92, 252', '94, 234, 212', '244, 114, 182']; // Original colors
@@ -48,7 +48,8 @@ const GITHUB_USERNAME = 'Individeveloper';
       return;
     }
     const { pct, msg } = steps[stepIdx];
-    bar.style.width = pct + '%';
+    bar.style.width = '100%';
+    bar.style.transform = `scaleX(${pct / 100})`;
     status.textContent = msg;
     stepIdx++;
   }, 300); // Faster loading interval
