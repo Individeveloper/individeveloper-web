@@ -1,6 +1,77 @@
 const GITHUB_USERNAME = 'Individeveloper';
 
 // ========================================
+// LOADING SCREEN
+// ========================================
+
+(function initLoadingScreen() {
+  const screen = document.getElementById('loadingScreen');
+  if (!screen) return;
+
+  const bar = document.getElementById('loadingBar');
+  const status = document.getElementById('loadingStatus');
+  const particlesContainer = document.getElementById('loadingParticles');
+
+  // Create floating particles
+  if (particlesContainer) {
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('div');
+      p.className = 'loading-particle';
+      const size = Math.random() * 6 + 3;
+      const colors = ['#ff5757', '#ffcf33', '#38b6ff', '#ffffff'];
+      p.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        left: ${Math.random() * 100}%;
+        animation-duration: ${Math.random() * 4 + 3}s;
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      particlesContainer.appendChild(p);
+    }
+  }
+
+  // Block scroll during loading
+  document.body.style.overflow = 'hidden';
+
+  const messages = [
+    'Initializing...',
+    'Loading assets...',
+    'Building interface...',
+    'Almost ready...',
+    'Welcome!'
+  ];
+
+  let progress = 0;
+  const totalDuration = 2200;
+  const interval = 30;
+  const steps = totalDuration / interval;
+  const increment = 100 / steps;
+
+  const timer = setInterval(() => {
+    progress = Math.min(progress + increment + Math.random() * 1.5, 100);
+
+    if (bar) bar.style.width = progress + '%';
+
+    // Update status message
+    if (status) {
+      const msgIndex = Math.min(
+        Math.floor((progress / 100) * messages.length),
+        messages.length - 1
+      );
+      status.textContent = messages[msgIndex];
+    }
+
+    if (progress >= 100) {
+      clearInterval(timer);
+      setTimeout(() => {
+        screen.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 400);
+    }
+  }, interval);
+})();
+
+// ========================================
 // NAVBAR SCROLL EFFECT
 // ========================================
 
@@ -406,9 +477,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200 + i * 150);
   });
   
-  // Load portfolio projects from JSON
+  // Load portfolio projects with skeleton loading
+  showSkeletonLoading();
   loadProjects();
 });
+
+// ========================================
+// SKELETON LOADING FOR PORTFOLIO
+// ========================================
+
+function createSkeletonCard() {
+  return `
+    <div class="skeleton-card">
+      <div class="skeleton-image">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+      <div class="skeleton-body">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-tags">
+          <div class="skeleton-tag"></div>
+          <div class="skeleton-tag"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showSkeletonLoading() {
+  ['games', 'web', 'mobile'].forEach(cat => {
+    const grid = document.getElementById(`${cat}-grid`);
+    if (!grid) return;
+    // Show 2 skeleton cards per category
+    grid.innerHTML = createSkeletonCard() + createSkeletonCard();
+  });
+}
+
 // ========================================
 // LOAD PROJECTS FROM JSON
 // ========================================
@@ -464,8 +568,22 @@ function buildProjectCard(project, category) {
 }
 
 async function loadProjects() {
+  // Simulate a small network delay for the loading effect to be visible
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  let data;
+
   try {
-    const data = {
+    // Try fetching from projects.json first
+    const response = await fetch('projects.json');
+    if (response.ok) {
+      data = await response.json();
+    } else {
+      throw new Error('Failed to fetch');
+    }
+  } catch (err) {
+    // Fallback to hardcoded data
+    data = {
       "games": [
         {
           "id": "game-coming-soon",
@@ -509,27 +627,33 @@ async function loadProjects() {
         }
       ]
     };
-
-    ['games', 'web', 'mobile'].forEach(cat => {
-      const grid = document.getElementById(`${cat}-grid`);
-      if (!grid || !data[cat]) return;
-      grid.innerHTML = '';
-      data[cat].forEach(project => {
-        const card = buildProjectCard(project, cat);
-        grid.appendChild(card);
-      });
-      // Re-observe newly added animated elements
-      grid.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-      // Re-enable tilt on new cards (desktop only)
-      if (!window.matchMedia('(max-width: 768px)').matches) {
-        grid.querySelectorAll('[data-tilt]').forEach(el => {
-          el.addEventListener('mousemove', handleTilt);
-          el.addEventListener('mouseleave', resetTilt);
-        });
-      }
-    });
-  } catch (err) {
-    console.warn('Could not load projects:', err);
   }
-}
 
+  // Render cards with staggered entrance animation
+  ['games', 'web', 'mobile'].forEach(cat => {
+    const grid = document.getElementById(`${cat}-grid`);
+    if (!grid || !data[cat]) return;
+    grid.innerHTML = '';
+    
+    data[cat].forEach((project, index) => {
+      const card = buildProjectCard(project, cat);
+      grid.appendChild(card);
+      
+      // Staggered entrance animation
+      setTimeout(() => {
+        card.classList.add('loaded');
+      }, 150 * index + 100);
+    });
+
+    // Re-observe newly added animated elements
+    grid.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    
+    // Re-enable tilt on new cards (desktop only)
+    if (!window.matchMedia('(max-width: 768px)').matches) {
+      grid.querySelectorAll('[data-tilt]').forEach(el => {
+        el.addEventListener('mousemove', handleTilt);
+        el.addEventListener('mouseleave', resetTilt);
+      });
+    }
+  });
+}

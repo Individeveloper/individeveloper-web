@@ -29,6 +29,9 @@
     />
     <link rel="icon" type="image/png" href="assets/favicon.png" />
 
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       :root {
@@ -64,45 +67,6 @@
 
       .cursor-glow {
         display: none;
-      }
-
-      .loading-screen.hidden {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
-
-      .loading-particle {
-        position: absolute;
-        border-radius: 999px;
-        animation: loadingParticleFloat linear infinite;
-      }
-
-
-
-      .loading-orb {
-        position: absolute;
-        border-radius: 999px;
-        filter: blur(40px);
-        pointer-events: none;
-        animation: loadingOrbPulse 4s ease-in-out infinite alternate;
-      }
-
-      .loading-orb--1 {
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 87, 87, 0.15);
-        top: -100px;
-        left: -100px;
-      }
-
-      .loading-orb--2 {
-        width: 250px;
-        height: 250px;
-        background: rgba(56, 182, 255, 0.15);
-        bottom: -80px;
-        right: -80px;
-        animation-delay: -2s;
       }
 
       .animate-on-scroll {
@@ -192,6 +156,12 @@
         z-index: 1;
       }
 
+      @media (max-width: 768px) {
+        .section {
+          padding: 80px 0;
+        }
+      }
+
       .section-header {
         text-align: center;
         margin-bottom: 64px;
@@ -215,9 +185,9 @@
 
       .section-title {
         font-family: "Press Start 2P", cursive;
-        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-size: clamp(1.4rem, 4vw, 3rem);
         margin-bottom: 16px;
-        line-height: 1.2;
+        line-height: 1.4;
       }
 
       .section-desc {
@@ -226,41 +196,202 @@
         color: #d1d1e0;
       }
 
-      @keyframes logoReveal {
-        0% { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(10px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-      }
-
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
       @keyframes cursorBlink {
         0%, 100% { opacity: 1; }
         50% { opacity: 0; }
-      }
-
-      @keyframes loadingParticleFloat {
-        0% { transform: translateY(100vh) scale(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 0.6; }
-        100% { transform: translateY(-100px) scale(1); opacity: 0; }
-      }
-
-      @keyframes loadingOrbPulse {
-        from { transform: scale(1); opacity: 0.6; }
-        to { transform: scale(1.3); opacity: 1; }
       }
 
       @keyframes scrollWheel {
         0%, 100% { opacity: 1; transform: translateY(0); }
         50% { opacity: 0.3; transform: translateY(8px); }
       }
+
+      /* ===== LOADING SCREEN ===== */
+      .loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #121218;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.7s ease, visibility 0.7s ease;
+      }
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+        text-align: center;
+        padding: 0 24px;
+      }
+      .loading-logo-anim {
+        font-family: "Press Start 2P", cursive;
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        color: #f8f8f2;
+        animation: logoReveal 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        opacity: 0;
+      }
+      .loading-bar-wrapper {
+        width: clamp(200px, 60vw, 320px);
+        height: 20px;
+        background: #2a2a35;
+        border: 4px solid #ffffff;
+        border-radius: 0px;
+        overflow: hidden;
+        animation: fadeInUp 0.6s 0.4s ease forwards;
+        opacity: 0;
+      }
+      .loading-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(135deg, #ff5757 0%, #ffcf33 100%);
+        transition: width 0.3s ease;
+      }
+      .loading-status {
+        font-size: 0.85rem;
+        color: #d1d1e0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        animation: fadeInUp 0.6s 0.6s ease forwards;
+        opacity: 0;
+      }
+      .loading-particle {
+        position: absolute;
+        border-radius: 999px;
+        animation: loadingParticleFloat linear infinite;
+      }
+      .loading-orb {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(40px);
+        pointer-events: none;
+        animation: loadingOrbPulse 4s ease-in-out infinite alternate;
+      }
+      .loading-orb--1 {
+        width: 300px; height: 300px;
+        background: rgba(255, 87, 87, 0.15);
+        top: -100px; left: -100px;
+      }
+      .loading-orb--2 {
+        width: 250px; height: 250px;
+        background: rgba(56, 182, 255, 0.15);
+        bottom: -80px; right: -80px;
+        animation-delay: -2s;
+      }
+      @keyframes logoReveal {
+        0% { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(10px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes loadingParticleFloat {
+        0% { transform: translateY(100vh) scale(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-100px) scale(1); opacity: 0; }
+      }
+      @keyframes loadingOrbPulse {
+        from { transform: scale(1); opacity: 0.6; }
+        to { transform: scale(1.3); opacity: 1; }
+      }
+
+      /* ===== PORTFOLIO SKELETON LOADING ===== */
+      .skeleton-card {
+        background: #2a2a35;
+        border: 4px solid rgba(255,255,255,0.1);
+        aspect-ratio: 16 / 12;
+        overflow: hidden;
+        position: relative;
+      }
+      .skeleton-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+        animation: skeletonShimmer 1.5s ease-in-out infinite;
+      }
+      .skeleton-image {
+        height: 55%;
+        background: linear-gradient(135deg, rgba(255,87,87,0.15), rgba(255,207,51,0.1));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .skeleton-image i {
+        font-size: 2rem;
+        color: rgba(255,255,255,0.08);
+        animation: skeletonPulse 2s ease-in-out infinite;
+      }
+      .skeleton-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .skeleton-line {
+        height: 12px;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.06);
+      }
+      .skeleton-line.short { width: 60%; }
+      .skeleton-line.medium { width: 85%; }
+      .skeleton-tags {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .skeleton-tag {
+        width: 60px;
+        height: 22px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+      }
+      @keyframes skeletonShimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      @keyframes skeletonPulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.1); }
+      }
+
+      /* ===== PORTFOLIO CARD ENTRANCE ===== */
+      .portfolio-item {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+      }
+      .portfolio-item.loaded {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     </style>
   </head>
   <body class="bg-[#121218] text-[#f8f8f2] antialiased">
 
+    <!-- ============ LOADING SCREEN ============ -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-particles" id="loadingParticles"></div>
+      <div class="loading-orb loading-orb--1"></div>
+      <div class="loading-orb loading-orb--2"></div>
+      <div class="loading-content">
+        <div class="loading-logo-anim">
+          <span class="text-[#8b8b9e]">&lt;</span>indiv<span class="text-[#ff5757]">dev</span><span class="text-[#8b8b9e]">/&gt;</span>
+        </div>
+        <div class="loading-bar-wrapper">
+          <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div class="loading-status" id="loadingStatus">Initializing...</div>
+      </div>
+    </div>
 
     <!-- Cursor glow -->
     <div class="cursor-glow" id="cursorGlow"></div>

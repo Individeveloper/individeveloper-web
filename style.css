@@ -1310,7 +1310,7 @@ img {
 /* Portfolio Grid */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
   gap: 24px;
 }
 
@@ -2295,51 +2295,13 @@ img {
 }
 
 /* ========================================
-   LIGHT THEME OVERRIDES
+   DARK THEME FIXES
    ======================================== */
 
 .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.hero-grid {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-}
-
-.hero-badge {
-  background: var(--bg-glass);
-}
-
-.portfolio-overlay {
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.6) 50%,
-    transparent 100%
-  );
-}
-
-.portfolio-image-content {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.portfolio-card:hover .portfolio-image-content {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.developer-avatar {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.developer-achievements .achievement-item {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.form-group input,
-.form-group textarea {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(18, 18, 24, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .nav-actions {
@@ -2350,6 +2312,53 @@ img {
 
 @media (max-width: 768px) {
   .nav-links {
-    background: rgba(255, 255, 255, 0.97);
+    background: rgba(18, 18, 24, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 }
+
+/* ========================================
+   ADDITIONAL RESPONSIVE IMPROVEMENTS
+   ======================================== */
+
+@media (max-width: 480px) {
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .contact-info-card {
+    padding: 24px;
+  }
+  
+  .contact-form {
+    padding: 24px;
+  }
+  
+  .section-header {
+    margin-bottom: 40px;
+  }
+  
+  .category-header-text h3 {
+    font-size: 0.9rem;
+  }
+  
+  .footer-links-group {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-badge {
+    font-size: 0.65rem;
+    padding: 8px 16px;
+    letter-spacing: 0.1em;
+  }
+  
+  .section-tag {
+    font-size: 0.7rem;
+    padding: 6px 14px;
+  }
+}
+
